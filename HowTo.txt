@@ -1,0 +1,160 @@
+################################################################################
+# CONTENTS AND SEARCH KEYS
+# @@ Install
+# @@ Launch
+# @@ Secure
+# @@ MySQL
+
+
+################################################################################
+# @@ Install
+# XAMPP INSTALLATION (FOR WINDOWS)
+################################################################################
+- extract the xampp-win32-1.7.4-VC6.7z
+- go into the extracted folder and cut the "xampp" folder to the C drive
+- delete the now empty folder that had the "xampp" folder
+- DONE
+
+################################################################################
+# @@ Launch
+# TO LAUNCH XAMPP CONTROL PANEL
+################################################################################
+*** DON'T USE THE .BAT FILES ***
+(causes port/firewall errors and is a pain)
+
+- In C:\xampp run "xampp-control.exe"
+- A window will popup by the taskbar
+- Start Apache and MySQL
+- If prompted to allow apache and mysql to port through firewall let them
+
+
+################################################################################
+# @@ Secure
+# SECURING THE SERVER
+################################################################################
+- Open up a web browser and go to "http://localhost"
+- You should see a big XAMPP logo and a bunch of language options
+- Click on "English"
+- On the right hand go to "Security"
+- XAMPP pages and MySQL should be unsecure
+- Click the link at the bottom: "http://localhost/security/xamppsecurity.php"
+- Set your SQL root password and click "Password changing"
+- Create a username and password for XAMPP Directory
+- Click "Make safe the XAMPP directory"
+- Using the xampp control panel shut down mysql and apache
+- Go to "C:\xampp\apache\conf" and make a copy of "httpd.conf" somewhere
+	but not in that folder (you can delete this later)
+- Edit "httpd.conf"
+
+...
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+</Directory>
+
+...
+
+<Directory "/xampp/htdocs">
+...
+    #
+    # Controls who can get stuff from this server.
+    #
+	# Order allow,deny
+	# Allow from all
+	Order deny,allow
+    Deny from all
+    Allow from localhost
+    Allow from 127.0.0.1
+</Directory>
+
+...
+
+<Directory "/xampp/cgi-bin">
+    AllowOverride None
+    Options None
+	# Order allow,deny
+	# Allow from all
+	Order deny,allow
+	Deny from all
+	Allow from localhost
+    Allow from 127.0.0.1
+
+</Directory>
+
+...
+
+# Go all the way to the bottom of the file and add these lines:
+
+# Tells apache not to display the server version on error pages, or other pages
+# it generates
+ServerSignature Off
+
+# Tells apache to only return "Apache" in the Server header, returned on every
+# page request
+ServerTokens Prod
+
+
+- DONE Securing apache
+
+# TEST TO SEE IF SECURE 
+- To test to see if it worked:
+- To test:
+	mkdir c:/xampp/htdocs/junk 
+	cd c:/xampp/htdocs/junk
+	vi junk.html
+		<HTML>hello</HTML>
+	- launch browser
+		http://localhost/junk	# we want to force the web server (not php, not cgi-bin)
+								# to generate a page
+			bottom of screen should contain
+			Apache
+			bottom of screen should NOT contain
+			Apache/2.2.4 (Win32) DAV/2 mod_ssl/2.2.4 OpenSSL/0.9.8e mod_autoindex_color PHP/5.2.3
+
+		http://localhost/anyFolderThatDoesNotExist	# we want to generate an error message
+			bottom of screen should contain
+			Apache
+			bottom of screen should NOT contain
+			Apache/2.2.4 (Win32) DAV/2 mod_ssl/2.2.4 OpenSSL/0.9.8e mod_autoindex_color PHP/5.2.3
+
+################################################################################
+# @@ MySQL
+# HOW TO USE THE MySQL DATABASE (BASEDIR = c:\xamp\mysql)
+################################################################################
+- Link to MySQL manual: "http://dev.mysql.com/doc/refman/5.5/en/"
+
+- To access mysql in the cmd
+	cd c:\xampp\mysql\bin
+	mysql -u root -p				# Want to access the mysql database as root
+									# user by using a password
+
+- To display existing accounts in the mysql.user table and check the passwords
+	for each. (Make sure to log into mysql as root... see above)
+	mysql> SELECT User, Host, Password FROM mysql.user
+
+# The folowing are ways to do some useful things without starting a mysql
+# session.  All of these can be done in a mysql sesssion
+# (see tutorial at site link)
+- To view the MySql version
+	cd c:\xampp\mysql\bin
+	mysqladmin version
+	
+- To view the databases
+	cd c:\xampp\mysql\bin
+	mysqlshow -u root -p
+
+- To create a database
+	cd c:\xampp\mysql\bin
+	mysqladmin create [dbName] - u root -p
+
+- To drop a database
+	cd c:\xampp\mysql\bin
+	mysqladmin drop [dbName] - u root -p
+
+- To view the tables in a database
+	cd c:\xampp\mysql\bin
+	mysqlshow [dbName] -u root -p
+
